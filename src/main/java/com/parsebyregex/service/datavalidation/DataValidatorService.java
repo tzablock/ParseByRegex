@@ -1,0 +1,53 @@
+package com.parsebyregex.service.datavalidation;
+
+import com.parsebyregex.constants.ValidationType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class DataValidatorService {//TODO tests
+    private LoggingService logging;
+    private ResponseService response;
+
+    @Autowired
+    public DataValidatorService(LoggingService logging, ResponseService response) {
+        this.logging = logging;
+        this.response = response;
+    }
+
+    public void validateIfNotEmptyInput(String strToParse) {
+        if (strToParse.isEmpty()){
+            logging.appendFailedValidation(ValidationType.INPUT_EMPTY);
+            response.failedResponseByValidation(ValidationType.INPUT_EMPTY);
+        } else {
+            logging.appendSuccessfulValidation(ValidationType.INPUT_EMPTY);
+        }
+    }
+
+    public void validateIfInputCreateKeyValuePairs(List<String> keyValuePars) {
+        if (isNotEven(keyValuePars)){
+            logging.appendFailedValidation(ValidationType.KEY_VALUE_PAIRS);
+        } else {
+            logging.appendSuccessfulValidation(ValidationType.KEY_VALUE_PAIRS);
+        }
+    }
+
+    public ResponseEntity<String> getResponse(){
+        return response.getResponse();
+    }
+
+    public String getFailedLogs(){
+        return logging.getFailedLogs();
+    }
+
+    public String getSuccessLogs(){
+        return logging.getSuccessLogs();
+    }
+
+    private boolean isNotEven(List<String> keyValuePars) {
+        return keyValuePars.size()%2 != 0;
+    }
+}
