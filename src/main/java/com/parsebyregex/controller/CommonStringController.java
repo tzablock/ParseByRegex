@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BinaryOperator;
@@ -38,7 +39,7 @@ public class CommonStringController {
     ResponseEntity<String> separatedByComma(@RequestBody List<String> stringsToParse){
         Map<String, List<String>> keyValuePars = stringsToParse.stream().map(
                 s -> parsingService.parseForOneCharacterSeparation(s, SeparationCharacter.COMMA)
-        ).reduce(mergeMaps()).get();
+        ).reduce(mergeMaps()).orElse(new HashMap<>());
         //TODO use repository to write it
         return validatorService.getResponse();
     }
