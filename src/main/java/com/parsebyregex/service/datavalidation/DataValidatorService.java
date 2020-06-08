@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Service
 public class DataValidatorService {//TODO tests
@@ -35,6 +37,14 @@ public class DataValidatorService {//TODO tests
             response.failedResponseByValidation(new NoKeyValuePairs());
         } else {
             logging.appendSuccessfulValidation(ValidationType.KEY_VALUE_PAIRS);
+        }
+    }
+
+    public void validateForException(Runnable invokeParsing){
+        try {
+            invokeParsing.run();
+        } catch (RuntimeException e){
+            response.failedResponseByInternalError(e);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.parsebyregex.controller;
 
 import com.parsebyregex.constants.SeparationCharacter;
+import com.parsebyregex.repository.KeyValuePairsRepository;
 import com.parsebyregex.service.CommonStringParsingService;
 import com.parsebyregex.service.datavalidation.DataValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,13 @@ import java.util.stream.Stream;
 public class CommonStringController {
     private CommonStringParsingService parsingService;
     private DataValidatorService validatorService;
+    private KeyValuePairsRepository repository;
 
     @Autowired
-    public CommonStringController(CommonStringParsingService parsingService, DataValidatorService validatorService) {
+    public CommonStringController(CommonStringParsingService parsingService, DataValidatorService validatorService, KeyValuePairsRepository repository) {
         this.parsingService = parsingService;
         this.validatorService = validatorService;
+        this.repository = repository;
     }
 
     @GetMapping("")
@@ -37,10 +40,12 @@ public class CommonStringController {
 
     @PostMapping("/comma")
     ResponseEntity<String> separatedByComma(@RequestBody List<String> stringsToParse){
-        Map<String, List<String>> keyValuePars = stringsToParse.stream().map(
-                s -> parsingService.parseForOneCharacterSeparation(s, SeparationCharacter.COMMA)
-        ).reduce(mergeMaps()).orElse(new HashMap<>());
-        //TODO use repository to write it
+        validatorService.validateForException(() -> {
+            Map<String, List<String>> keyValuePars = stringsToParse.stream().map(
+                                                                                   s -> parsingService.parseForOneCharacterSeparation(s, SeparationCharacter.COMMA)
+                                                                                ).reduce(mergeMaps()).orElse(new HashMap<>());
+            repository.saveOrUpdate(keyValuePars);
+        });
         return validatorService.getResponse();
     }
 
