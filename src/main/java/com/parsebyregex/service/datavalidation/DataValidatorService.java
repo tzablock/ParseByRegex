@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 @Service
 public class DataValidatorService {//TODO tests
@@ -22,7 +20,7 @@ public class DataValidatorService {//TODO tests
         this.response = response;
     }
 
-    public void validateIfNotEmptyInput(String strToParse) {
+    public void validateIfNotEmptyInput(final String strToParse) {
         if (strToParse.isEmpty()){
             logging.appendFailedValidation(ValidationType.INPUT_EMPTY);
             response.failedResponseByValidation(new EmptyInputException());
@@ -31,7 +29,7 @@ public class DataValidatorService {//TODO tests
         }
     }
 
-    public void validateIfInputCreateKeyValuePairs(List<String> keyValuePars) {
+    public void validateIfInputCreateKeyValuePairs(final List<String> keyValuePars) {
         if (isNotEven(keyValuePars)){
             logging.appendFailedValidation(ValidationType.KEY_VALUE_PAIRS);
             response.failedResponseByValidation(new NoKeyValuePairs());
@@ -44,6 +42,7 @@ public class DataValidatorService {//TODO tests
         try {
             invokeParsing.run();
         } catch (RuntimeException e){
+            logging.appendFailedValidation(ValidationType.EXCEPTION_VALIDATION);
             response.failedResponseByInternalError(e);
         }
     }

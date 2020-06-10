@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Repository //TODO why not created
-public class KeyValuePairsRepository {//TODO add getting variables from properties file https://www.baeldung.com/properties-with-spring
+@Repository //TODO tests
+public class KeyValuePairsRepository {//getting variables from properties: https://www.baeldung.com/properties-with-spring
     @Value("${repository.path}")//TODO make it dynamic for environments local,dev,uat,prod
     private String pathToLocalRepository;
 

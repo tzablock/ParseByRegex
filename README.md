@@ -11,3 +11,6 @@ correctness of format if it can be parse to key value
 add there logging of those which were parsed and which can't be parsed with name of failed validation
 3. Get those information back as list.
 4. Try to integrate it with Azure.
+
+TODO:
+1. Set variable with environment type: dev,test,uat,prod (export RUN_ENV=...) ????
