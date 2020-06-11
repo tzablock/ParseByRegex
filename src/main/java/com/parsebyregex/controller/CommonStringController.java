@@ -41,21 +41,9 @@ public class CommonStringController {
     @PostMapping("/comma")
     ResponseEntity<String> separatedByComma(@RequestBody List<String> stringsToParse){
         validatorService.validateForException(() -> {
-            Map<String, List<String>> keyValuePars = stringsToParse.stream().map(
-                                                                                   s -> parsingService.parseForOneCharacterSeparation(s, SeparationCharacter.COMMA)
-                                                                                ).reduce(mergeMaps()).orElse(new HashMap<>());
+            Map<String, List<String>> keyValuePars = parsingService.parseForOneCharacterSeparation(stringsToParse, SeparationCharacter.COMMA);
             repository.saveOrUpdate(keyValuePars);
         });
         return validatorService.getResponse();
-    }
-
-    private BinaryOperator<Map<String, List<String>>> mergeMaps() {
-        return (m1, m2) -> Stream.of(m1,m2)
-                                 .flatMap(m -> m.entrySet().stream())
-                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, mergeValues()));
-    }
-
-    private BinaryOperator<List<String>> mergeValues() {
-        return (v1, v2) -> Stream.of(v1, v2).flatMap(List::stream).collect(Collectors.toList());
     }
 }

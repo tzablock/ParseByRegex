@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class DataValidatorService {//TODO tests
+public class DataValidatorService {
     private LoggingService logging;
     private ResponseService response;
 

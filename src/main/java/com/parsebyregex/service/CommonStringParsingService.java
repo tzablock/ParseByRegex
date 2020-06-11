@@ -21,22 +21,38 @@ public class CommonStringParsingService { //TODO tests
         this.validatorService = validatorService;
     }
 
-    public Map<String, List<String>> parseForOneCharacterSeparation(String strToParse, SeparationCharacter separationCharacter){
+    public Map<String, List<String>> parseForOneCharacterSeparation(final List<String> stringsToParse, SeparationCharacter separationCharacter) {
+        return stringsToParse.stream().map(
+                s -> parseForOneCharacterSeparation(s, separationCharacter)
+        ).reduce(mergeMaps()).orElse(new HashMap<>());
+    }
+
+    public Map<String, List<String>> parseForOneCharacterSeparation(String strToParse, SeparationCharacter separationCharacter) {
         validatorService.validateIfNotEmptyInput(strToParse);
         String separationValue = separationCharacter.getSeparator();
         List<String> keyValuePars = Arrays.asList(strToParse.split(separationValue));
         validatorService.validateIfInputCreateKeyValuePairs(keyValuePars);
         return keyValuePars.stream()
-                           .map(
-                                   pairCorrespondingKeyValuePairs()
-                           ).filter(
-                                   removeSeparatorsBetweenGroupedPairs()
-                           ).collect(
-                                   Collectors.toMap(getKey(), getValueAndWrapIntoList(), mergeValuesForTheSameKey())
-                           );
+                .map(
+                        pairCorrespondingKeyValuePairs()
+                ).filter(
+                        removeSeparatorsBetweenGroupedPairs()
+                ).collect(
+                        Collectors.toMap(getKey(), getValueAndWrapIntoList(), mergeValuesForTheSameKey())
+                );
     }
 
-    private Function<String, List<String>> pairCorrespondingKeyValuePairs(){
+    private BinaryOperator<Map<String, List<String>>> mergeMaps() {
+        return (m1, m2) -> Stream.of(m1, m2)
+                .flatMap(m -> m.entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, mergeValues()));
+    }
+
+    private BinaryOperator<List<String>> mergeValues() {
+        return (v1, v2) -> Stream.of(v1, v2).flatMap(List::stream).collect(Collectors.toList());
+    }
+
+    private Function<String, List<String>> pairCorrespondingKeyValuePairs() {
         List<String> bufferWithKey = new ArrayList<>();
         return (String nextKeyOrValue) -> {
             if (ifKeyInBuffer(bufferWithKey)) {
@@ -77,7 +93,7 @@ public class CommonStringParsingService { //TODO tests
         return kvp -> Collections.singletonList(kvp.get(VALUE_INDEX));
     }
 
-    private BinaryOperator<List<String>> mergeValuesForTheSameKey(){
+    private BinaryOperator<List<String>> mergeValuesForTheSameKey() {
         return (v1, v2) -> Stream.of(v1, v2).flatMap(List::stream).collect(Collectors.toList());
     }
 }
