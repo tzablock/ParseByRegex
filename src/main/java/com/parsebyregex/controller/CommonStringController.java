@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/commonstring")
-public class CommonStringController {
+public class CommonStringController { //TODO it test
     private CommonStringParsingService parsingService;
     private DataValidatorService validatorService;
     private KeyValuePairsRepository repository;
